@@ -2,50 +2,90 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  color: #555;
+  color: #333;
 }
 
 main {
-  width: 400px;
-  margin: 100px auto;
-  text-align: center;
-  font-family: 'Josefin Sans', sans-serif;
-}
-
-main p {
-  margin: 20px 0;
-}
-
-.button-container {
+  position: relative;
+  top: 200px;
+  width: 600px;
   margin: 0 auto;
-  display: flex;
-  width: 150px;
-  height: 50px;
-  text-align: center;
-  
+  font-family: 'Josefin Sans', sans-serif;
+  transition: all .15s linear;
+  //border: 1px solid red;
 }
 
-#town {
-  font-size: 20px;
+a {
+  text-decoration: none;
 }
 
-#C-button {
-  width: 50%;
-  height: 30px;
-  cursor: pointer;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  border-radius: 5px;
+.extract {
+  //border: 1px solid red;
+  padding: 10px 5px;
   background-color: lightblue;
-  margin-right: 5px;
+  margin-bottom: 10px;
 }
 
-#F-button {
-  width: 50%;
-  height: 30px;
+h1 {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.slide-up {
+  position: relative;
+  top: 0px;
+}
+
+#input {
+  width: 600px;
+  margin: 10px auto;
+  margin-top: 100px;
+  font-family: 'Josefin Sans', sans-serif;
+  text-align: center;
+  transition: all .3s linear;
+}
+
+#input p {
+  padding: 10px 5px;
+  font-size: 16px;
+}
+
+#input a {
+  display: block;
+  padding: 10px 5px;
+  margin-bottom: 10px;
+  font-size: 20px;
+  text-decoration: none;
+}
+
+::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color: lightgrey;
+}
+
+#search-icon {
+  display: block;
   cursor: pointer;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  border-radius: 5px;
-  background-color: #eee;
+  color: lightblue;
+}
+
+#search-icon-small {
+  display: none;
+  cursor: pointer;
+  color:  lightblue;
+}
+
+#search {
+  display: none;
+  width: 200px;
+  height: 20px;
+  margin: 5px 5px;
+  margin-left: 10px;
+}
+
+
+@media only screen and (max-width: 425px) {
+  main,
+  #input {
+    width: 100%;
+  }
 }

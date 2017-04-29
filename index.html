@@ -3,96 +3,107 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Get My Weather</title>
+    <title>Wikipedia Viewer</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
-    <link rel="icon" type="image/png" href="kweather.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="icon" type="image/png" href="wikipedia.png">
   </head>
-
   <body>
-    <main>
-      <!--- <p id="data"></p> -->
-      <!---<p>Country: <span id="country"></span></p> -->
-      <p><span id="town"></span></p>
-      <p id="icon"></p>
-      <p>Current Weather: <span id="weather"></span> <br>Temperature: <span id="temperature"></span></p>
-      <div class="button-container">
-        <div id="C-button">&deg;C</div>
-        <div id="F-button">&deg;F</div>
-      </div>
-    </main>
-    <script>
-    let flag = 1;
-    
-    function updateWeather(units) {
-      let latitude;
-      let longitude;
-            
-      if (navigator.geolocation){
-          navigator.geolocation.getCurrentPosition(function(position) {
-            latitude = position.coords.latitude;          
-            longitude = position.coords.longitude;
-            /*document.getElementById('data').innerHTML="latitude: "+ 
-            position.coords.latitude +  "<br>longitude: " +  position.coords.longitude;*/
-            let url = "http://api.openweathermap.org/data/2.5/weather?lat="+latitude+"&lon="+longitude+"&units="+units+"&APPID=1437175ecaacbe1bb362ecce440f98f8"
-            req = new XMLHttpRequest();
-            req.open("GET", url, true);
-            req.send();
-            req.onload = function(){        
-              let json=JSON.parse(req.responseText);
-              console.log(json);
-              /*document.getElementById('country').innerHTML = json["sys"]["country"];*/
-              document.getElementById('town').innerHTML = json["name"] + ",  " + json["sys"]["country"];
-              document.getElementById('weather').innerHTML = json["weather"][0]["description"];
-              let temperature = (parseFloat(json["main"]["temp"])).toFixed(1);
-              let symbol;
-              if (flag) {
-                symbol = "C";
-              } else {
-                symbol = "F";
-              };
-              document.getElementById('temperature').innerHTML = temperature + "&deg;" + symbol;
-              let iconURL;
-              let icon = json["weather"][0]["icon"];
-              iconURL = "http://openweathermap.org/img/w/" + icon + ".png"
-              console.log(iconURL);
-              document.getElementById('icon').innerHTML = "<img src='" + iconURL + "'>"
-            };
-          });
-      };
-    };
-    
-    updateWeather("metric");
         
-    let cButton = document.querySelector("#C-button");
-    let fButton = document.querySelector("#F-button");
-        
-    cButton.addEventListener('click', function(e) {
-      if (!flag) {
-        updateWeather("metric");
-        flag = 1;
-        cButton.style.backgroundColor = "lightblue";
-        fButton.style.backgroundColor = "#eee";
-      } 
-    })
-    
-    fButton.addEventListener('click', function(e) {
-      if (flag) {
-        updateWeather("imperial");
-        flag = 0;
-        fButton.style.backgroundColor = "lightblue";
-        cButton.style.backgroundColor = "#eee";
-      } 
-    })
+        <div id="input">          
+          <a href="https://en.wikipedia.org/wiki/Special:Random" target="_blank">Click here for a random article</a>
+          <input id="search" type="text" autofocus="true" placeholder="search" onchange="search()"></input>
+          <i id="search-icon-small" class="fa fa-search fa-lg" aria-hidden="true"></i>
+          <i id="search-icon" class="fa fa-search fa-2x" aria-hidden="true"></i>
+          <p>Click icon to search</p>
+        </div>
+        <main>
+        </main>
+        <script>
+          let first = 1;
+          let main = document.getElementsByTagName("main");
+          let icon = document.getElementById("search-icon");
+          let smallIcon = document.getElementById("search-icon-small");
+          let inputGroup = document.getElementById("input")
+          let inputField = document.getElementById("search");
+          let tag,
+              y;
 
-    
-    /*req = new XMLHttpRequest();
-      req.open("GET","http://api.openweathermap.org/data/2.5/weather?lat="+latitude+"&lon="+longitude+"&APPID=1437175ecaacbe1bb362ecce440f98f8",true);
-      req.send();
-      req.onload = function(){        
-        json=JSON.parse(req.responseText);
-        document.getElementById('current_weather').innerHTML = JSON.stringify(json);
-        };*/
-    </script>
+          icon.addEventListener("click", function() {
+            icon.style.display = "none";
+            smallIcon.style.display = "inline-block"
+            inputField.style.display = "inline-block"; 
+            inputGroup.style.marginTop = "10px";
+          })
+
+          smallIcon.addEventListener("click", search);
+
+          function search() {
+            y = document.getElementById("search").value;
+            
+            if (y !== "") {
+                if (first === 0) {
+                tag.parentNode.removeChild(tag);
+                while (main[0].hasChildNodes()) {
+                  main[0].removeChild(main[0].lastChild)
+                }
+                sendSearch();
+                document.getElementById("search").value = "";
+              } else {
+                sendSearch();
+                document.getElementById("search").value = "";
+                first = 0;
+              }
+            }
+          }
+
+          function sendSearch() {
+            tag = document.createElement("script");
+            y = document.getElementById("search").value;
+            tag.src = "https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts%7Cinfo&list=&explaintext=1&exsectionformat=plain&generator=search&exlimit=10&exintro=1&exsentences=1&inprop=url&gsrsearch="+y+"&formatversion=2&utf8&callback=myCallback";
+            document.getElementsByTagName("head")[0].appendChild(tag);
+          }
+            
+          function myCallback(response){
+            console.log(response);
+            let arr = response["query"]["pages"].sort(function(x, y) {
+              return x["index"] > y["index"];
+            })
+            console.log(arr);
+            let arrLength = response["query"]["pages"].length;
+            //console.log(main[0])
+            let text,
+                title,
+                url,
+                newDiv,
+                h,
+                p1,
+                wrap;
+            for (let i = 0; i < arrLength; i++) {
+              text = response["query"]["pages"][i]["extract"];
+              title = response["query"]["pages"][i]["title"];
+              url = response["query"]["pages"][i]["canonicalurl"];
+              //console.log(title);
+              //console.log(url);
+              newDiv = document.createElement("div");
+              newDiv.setAttribute("class", "extract");              
+              main[0].appendChild(newDiv);
+              h = document.createElement("h1");
+              p1 = document.createElement("p");
+              h.textContent = title;
+              p1.textContent = text;
+              newDiv.appendChild(h);
+              newDiv.appendChild(p1);
+              wrap = document.createElement("a");
+              wrap.href = url;
+              wrap.setAttribute("target", "_blank")
+              newDiv.parentNode.replaceChild(wrap, newDiv); 
+              wrap.appendChild(newDiv);
+            }
+            main[0].setAttribute("class", "slide-up");
+          }
+      </script>
+      <!--- <script type="text/javascript" src="https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts%7Cinfo&list=&explaintext=1&exsectionformat=plain&generator=search&exlimit=10&exintro=1&exsentences=1&inprop=url&gsrsearch=Italy&formatversion=2&utf8&callback=myCallback"></script> -->
   </body>
 </html>
